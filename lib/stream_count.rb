@@ -1,6 +1,4 @@
 require 'stream_count/version'
-require 'English'
-require 'bigdecimal'
 
 # Collects IO stats from stdin and prints the stats to stderr.
 # Original stdin is output to stdout.
@@ -21,7 +19,7 @@ module StreamCount
     while (data = io.read(BUFFER_SIZE))
       $stdout.print(data)
       bytes += data.size
-      lines += data.count($INPUT_RECORD_SEPARATOR)
+      lines += data.count($/)
       output(bytes: bytes, lines: lines, throttle: true)
     end
     output(bytes: bytes, lines: lines, throttle: false)
