@@ -4,6 +4,8 @@ Output statistics about data from stdin while redirecting the data to stdout.
 The statistics are bytes read, bytes read per second, lines read, lines read per
 second and total seconds.
 
+<img src="stream_count_demo.gif" />
+
 ## Usage
 
 ```sh
