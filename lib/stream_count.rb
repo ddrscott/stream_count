@@ -17,7 +17,7 @@ module StreamCount
     lines = 0
     output(bytes: bytes, lines: lines, throttle: false)
     while (data = io.read(BUFFER_SIZE))
-      $stdout.print(data)
+      $stdout.write(data)
       bytes += data.size
       lines += data.count($/)
       output(bytes: bytes, lines: lines, throttle: true)
