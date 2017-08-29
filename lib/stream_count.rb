@@ -7,7 +7,7 @@ require 'stream_count/version'
 module StreamCount
   module_function
 
-  BUFFER_SIZE   = 1024
+  BUFFER_SIZE   = 10240
   TICK_DURATION = 0.2
 
   # Do the work
