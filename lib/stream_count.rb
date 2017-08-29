@@ -15,36 +15,34 @@ module StreamCount
     @start_time = Time.now.to_f
     bytes = 0
     lines = 0
-    output(bytes: bytes, lines: lines, throttle: false)
+    output(bytes: bytes, lines: lines)
     while (data = io.read(BUFFER_SIZE))
       $stdout.write(data)
       bytes += data.size
       lines += data.count($/)
-      output(bytes: bytes, lines: lines, throttle: true)
+      throttler { output(bytes: bytes, lines: lines) }
     end
-    output(bytes: bytes, lines: lines, throttle: false)
+    output(bytes: bytes, lines: lines)
   end
 
   # output formatted stats to stderr.
   # Using throttle will limit how often we print to stderr to 5/second.
-  def output(bytes:, lines:, throttle: true)
-    throttler(force: !throttle) do
-      msg = "\e[1G\e[2K%s seconds | %s bytes [ %s kb/sec ] | %s lines [ %s lines/sec ]"
-      duration = Time.now.to_f - @start_time
-      if duration > 0
-        $stderr.print(msg % [number_with_delimiter(duration.to_i),
-                             number_with_delimiter(bytes),
-                             number_with_delimiter((bytes / duration / 1024).to_i),
-                             number_with_delimiter(lines),
-                             number_with_delimiter((lines / duration).to_i)])
-      end
+  def output(bytes:, lines:)
+    msg = "\e[1G\e[2K%s seconds | %s bytes [ %s kb/sec ] | %s lines [ %s lines/sec ]"
+    duration = Time.now.to_f - @start_time
+    if duration > 0
+      $stderr.print(msg % [number_with_delimiter(duration.to_i),
+                           number_with_delimiter(bytes),
+                           number_with_delimiter((bytes / duration / 1024).to_i),
+                           number_with_delimiter(lines),
+                           number_with_delimiter((lines / duration).to_i)])
     end
   end
 
-  def throttler(force:, threshold: TICK_DURATION, &block)
+  def throttler(threshold: TICK_DURATION)
     @last_tick ||= Time.now.to_f
-    if force || Time.now.to_f > (@last_tick + threshold)
-      block.call
+    if Time.now.to_f > (@last_tick + threshold)
+      yield
       @last_tick = Time.now.to_f
     end
   end
